@@ -1,0 +1,124 @@
+# Mad-Thinkers
+# 🛒 SuperShop Management System
+
+A Java desktop application with a Swing GUI that simulates day-to-day retail shop operations. Built as a project for **CSE 202: Object Oriented Programming I Lab**, University of Asia Pacific.
+
+The system provides role-based login portals for **Admins** and **Employees**, complete inventory and billing workflows, and persistent CSV-based data storage — all designed around core Java OOP principles.
+
+---
+
+## ✨ Features
+
+### Admin Dashboard
+- Full CRUD (Create, Read, Update, Delete) on employee records
+- Real-time daily sales report
+- Low-stock alerts with an integrated restock workflow
+
+### Employee Dashboard
+- Add, search, update, and delete inventory items (Standard & Discount types)
+- Shopping-cart style billing system
+- Itemised, formatted customer invoice generation
+
+### Data Persistence
+- All employee records, inventory, and invoice history are stored in CSV files
+- Auto-creates default Admin account and data directory on first run
+- Resumes bill numbering correctly across sessions
+
+### Robust Error Handling
+- Graceful handling of `NumberFormatException`, `IOException`, `FileNotFoundException`, and `NullPointerException`
+- Input validation and retry prompts to prevent crashes
+
+---
+
+## 🏗️ OOP Concepts Applied
+
+| Concept | Implementation |
+|---|---|
+| **Abstraction** | Abstract `User` and `Item` classes define shared contracts |
+| **Inheritance** | `Admin`/`Employee` extend `User`; `StandardItem`/`DiscountItem` extend `Item` |
+| **Encapsulation** | Private/protected fields exposed only via getters and setters |
+| **Polymorphism** | `calculatePrice()` overridden per item type; resolved at runtime |
+
+The application also follows an **MVC-inspired architecture**, where View classes (`LoginFrame`, `AdminDashboard`, `EmployeeDashboard`) contain no business logic — all data processing is delegated to Controller classes (`AuthController`, `EmployeeController`, `ItemController`, `BillController`).
+
+---
+
+## 📁 Project Structure
+
+```
+SuperShop-Management-System/
+├── data/
+│   ├── employees.csv
+│   ├── items.csv
+│   └── invoices.csv
+├── src/
+│   ├── models/        # User, Admin, Employee, Item, StandardItem, DiscountItem, Bill
+│   ├── dao/            # CSVHandler (file I/O)
+│   ├── controllers/    # AuthController, EmployeeController, ItemController, BillController
+│   ├── ui/              # LoginFrame, AdminDashboard, EmployeeDashboard, dialogs
+│   └── Main.java
+└── README.md
+
+
+## 🛠️ Tech Stack
+
+| Category | Detail |
+|---|---|
+| Language | Java (JDK 17+) |
+| GUI | Swing |
+| Data Storage | CSV flat files |
+| IDE | IntelliJ IDEA / NetBeans / Eclipse |
+| OS | Windows 10/11 |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- JDK 17 or higher installed
+- An IDE such as IntelliJ IDEA, NetBeans, or Eclipse (or use `javac`/`java` from the command line)
+
+### Run the App
+1. Clone the repository:
+  
+   git clone https://github.com/JaRViS-456/Mad-Thinkers.git
+ 
+2. Open the project in your IDE.
+3. Run `Main.java`.
+4. On first launch, a default Admin account is auto-created:
+   - **ID:** `ADMIN001`
+   - **Password:** `admin123`
+
+
+## 🖥️ Sample Workflow
+
+1. Launch the app → choose **Admin** or **Employee** login.
+2. **Admin** can add/update/delete employees, view sales reports, and restock low inventory.
+3. **Employee** can manage inventory items and generate a customer bill via the shopping cart.
+4. All transactions are saved to `invoices.csv`, and a daily sales report can be pulled from the Admin panel.
+
+
+## 👥 Team — Mad Thinkers
+
+| Name       | ID       | Contribution |
+|---|---|---|
+| Md. Zubaer | 24101106 | Authentication & Core Base — abstract `User` classes, login logic, Login GUI |
+| Nasim Mahmud | 24201104 | Admin Panel — Employee management, Admin GUI dashboards, staff CRUD |
+| Dipraj Mitra Chandon | 24201091 | Inventory System — abstract `Item` logic, polymorphism, Item CRUD |
+| Yeasen Ahmed | 24201089 | Billing System — shopping cart logic, pricing, invoice generation |
+
+---
+
+## 📄 Project Report
+
+A detailed project report covering objectives, OOP theory, code architecture, and outputs is included in this repository.
+
+---
+
+## 📝 License
+
+This project was developed for academic purposes as part of the CSE 202 OOP I Lab coursework at the University of Asia Pacific.
+
+---
+
+*© 2026 Developed by Mad Thinkers*
