@@ -1,123 +1,258 @@
-# Mad-Thinkers
-# 🛒 SuperShop Management System
+# 🛒 SuperShop Management System (MVC)
 
-A Java desktop application with a Swing GUI that simulates day-to-day retail shop operations. Built as a project for **CSE 202: Object Oriented Programming I Lab**, University of Asia Pacific.
+A **Java Swing desktop application** for managing a retail shop, built with the **MVC (Model-View-Controller)** architecture pattern. Developed as a CSE 202: Object Oriented Programming I Lab project at **University of Asia Pacific**.
 
-The system provides role-based login portals for **Admins** and **Employees**, complete inventory and billing workflows, and persistent CSV-based data storage — all designed around core Java OOP principles.
+---
+
+## 📋 Table of Contents
+
+- [Features](#-features)
+- [Project Structure](#-project-structure)
+- [Architecture Overview](#-architecture-overview)
+- [Technologies Used](#-technologies-used)
+- [Getting Started](#-getting-started)
+- [Default Login Credentials](#-default-login-credentials)
+- [How to Use](#-how-to-use)
+- [Data Storage](#-data-storage)
+- [Class Diagram Summary](#-class-diagram-summary)
+- [Contributors](#-contributors)
 
 ---
 
 ## ✨ Features
 
-### Admin Dashboard
-- Full CRUD (Create, Read, Update, Delete) on employee records
-- Real-time daily sales report
-- Low-stock alerts with an integrated restock workflow
+### 🔐 Authentication
+- Role-based login system — separate access for **Admin** and **Employee**
+- Secure password authentication via `AuthController`
+- Auto-creates a default admin account if no data file exists
 
-### Employee Dashboard
-- Add, search, update, and delete inventory items (Standard & Discount types)
-- Shopping-cart style billing system
-- Itemised, formatted customer invoice generation
+### 👤 Admin Panel
+- **Employee Management** — Add, update, and delete employee accounts
+- **Inventory Management** — Add Standard and Discount items, update details, delete items, restock
+- **Item Search** — Search inventory by Item ID or Item Name
+- **Sales Report** — View all billing transactions made today
 
-### Data Persistence
-- All employee records, inventory, and invoice history are stored in CSV files
-- Auto-creates default Admin account and data directory on first run
-- Resumes bill numbering correctly across sessions
+### 🧾 Employee Panel
+- **Browse Inventory** — View all available items with live stock and pricing
+- **Billing / Cart** — Add items to cart, update quantities, remove items
+- **Invoice Generation** — Formatted customer invoice printed on checkout
+- **Stock Auto-Update** — Inventory stock reduces automatically after each sale
 
-### Robust Error Handling
-- Graceful handling of `NumberFormatException`, `IOException`, `FileNotFoundException`, and `NullPointerException`
-- Input validation and retry prompts to prevent crashes
-
----
-
-## 🏗️ OOP Concepts Applied
-
-| Concept | Implementation |
-|---|---|
-| **Abstraction** | Abstract `User` and `Item` classes define shared contracts |
-| **Inheritance** | `Admin`/`Employee` extend `User`; `StandardItem`/`DiscountItem` extend `Item` |
-| **Encapsulation** | Private/protected fields exposed only via getters and setters |
-| **Polymorphism** | `calculatePrice()` overridden per item type; resolved at runtime |
-
-The application also follows an **MVC-inspired architecture**, where View classes (`LoginFrame`, `AdminDashboard`, `EmployeeDashboard`) contain no business logic — all data processing is delegated to Controller classes (`AuthController`, `EmployeeController`, `ItemController`, `BillController`).
+### 💾 Data Persistence
+- All data saved to **CSV files** — survives application restarts
+- Separate files for employees, items, and invoices
 
 ---
 
 ## 📁 Project Structure
 
 ```
-SuperShop-Management-System/
-├── data/
-│   ├── employees.csv
-│   ├── items.csv
-│   └── invoices.csv
-├── src/
-│   ├── models/        # User, Admin, Employee, Item, StandardItem, DiscountItem, Bill
-│   ├── dao/            # CSVHandler (file I/O)
-│   ├── controllers/    # AuthController, EmployeeController, ItemController, BillController
-│   ├── ui/              # LoginFrame, AdminDashboard, EmployeeDashboard, dialogs
-│   └── Main.java
-└── README.md
+MVC/
+├── Main.java                          # Application entry point
+│
+├── models/                            # M — Model layer
+│   ├── User.java                      # Abstract base class for users
+│   ├── Admin.java                     # Admin user (extends User)
+│   ├── Employee.java                  # Employee user (extends User)
+│   ├── Item.java                      # Abstract base class for items
+│   ├── StandardItem.java              # Regular priced item (extends Item)
+│   ├── DiscountItem.java              # Discounted item (extends Item)
+│   └── Bill.java                      # Shopping cart & invoice model
+│
+├── controllers/                       # C — Controller layer
+│   ├── AuthController.java            # Handles login & session
+│   ├── UserController.java            # Employee CRUD operations
+│   ├── InventoryController.java       # Item CRUD, search, stock management
+│   └── BillingController.java         # Cart management & invoice generation
+│
+├── view/                              # V — View layer (Java Swing GUI)
+│   ├── LoginFrame.java                # Login window
+│   ├── AdminDashboard.java            # Admin main screen
+│   ├── EmployeeDashboard.java         # Employee main screen
+│   ├── AddEmployeeDialog.java         # Dialog: add new employee
+│   ├── UpdateEmployeeDialog.java      # Dialog: edit employee
+│   ├── AddItemDialog.java             # Dialog: add new item
+│   ├── UpdateItemDialog.java          # Dialog: edit item
+│   ├── SearchItemDialog.java          # Dialog: search items
+│   ├── BillingDialog.java             # Dialog: cart & checkout
+│   └── SalesReportDialog.java         # Dialog: today's sales report
+│
+├── dao/                               # Data Access Object layer
+│   └── CSVHandler.java                # All CSV file read/write operations
+│
+└── data/                              # Auto-generated data files
+    ├── employees.csv                  # User accounts
+    ├── items.csv                      # Inventory
+    └── invoices.csv                   # Billing history
+```
 
+---
 
-## 🛠️ Tech Stack
+## 🏗️ Architecture Overview
 
-| Category | Detail |
-|---|---|
-| Language | Java (JDK 17+) |
-| GUI | Swing |
-| Data Storage | CSV flat files |
-| IDE | IntelliJ IDEA / NetBeans / Eclipse |
-| OS | Windows 10/11 |
+This project strictly follows the **MVC pattern**:
+
+```
+┌─────────────────────────────────────────────────────┐
+│                      VIEW                           │
+│  LoginFrame │ AdminDashboard │ EmployeeDashboard    │
+│  Dialogs (Add/Update/Search/Billing/SalesReport)    │
+└────────────────────────┬────────────────────────────┘
+                         │ calls
+┌────────────────────────▼────────────────────────────┐
+│                   CONTROLLER                        │
+│  AuthController │ UserController                    │
+│  InventoryController │ BillingController            │
+└──────────┬──────────────────────────┬───────────────┘
+           │ uses                     │ persists via
+┌──────────▼──────────┐   ┌───────────▼───────────────┐
+│       MODEL         │   │          DAO               │
+│  User / Admin /     │   │      CSVHandler            │
+│  Employee           │   │  (employees.csv,           │
+│  Item / Standard /  │   │   items.csv,               │
+│  DiscountItem       │   │   invoices.csv)            │
+│  Bill               │   └───────────────────────────┘
+└─────────────────────┘
+```
+
+---
+
+## 🛠️ Technologies Used
+
+| Component        | Details                            |
+|------------------|------------------------------------|
+| Language         | Java (JDK 21+)                     |
+| GUI Framework    | Java Swing                         |
+| IDE              | IntelliJ IDEA                      |
+| Architecture     | MVC (Model-View-Controller)        |
+| Data Storage     | CSV files via BufferedReader/PrintWriter |
+| Build            | IntelliJ IDEA Module (MVC.iml)     |
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- JDK 17 or higher installed
-- An IDE such as IntelliJ IDEA, NetBeans, or Eclipse (or use `javac`/`java` from the command line)
+- Java JDK **21 or higher** installed
+- Any Java IDE (IntelliJ IDEA recommended) **or** command-line tools
 
-### Run the App
-1. Clone the repository:
-  
-   git clone https://github.com/JaRViS-456/Mad-Thinkers.git
- 
-2. Open the project in your IDE.
-3. Run `Main.java`.
-4. On first launch, a default Admin account is auto-created:
-   - **ID:** `ADMIN001`
-   - **Password:** `admin123`
+### Run with IntelliJ IDEA
+1. Clone or download this repository
+2. Open IntelliJ IDEA → **File → Open** → select the `MVC/` folder
+3. Wait for the project to index
+4. Open `Main.java`
+5. Click the **▶ Run** button (or press `Shift + F10`)
 
+### Run from Command Line
+```bash
+# Navigate to the project root
+cd MVC
 
-## 🖥️ Sample Workflow
+# Compile all source files
+javac -d out/production/MVC \
+  Main.java \
+  models/*.java \
+  dao/*.java \
+  controllers/*.java \
+  view/*.java
 
-1. Launch the app → choose **Admin** or **Employee** login.
-2. **Admin** can add/update/delete employees, view sales reports, and restock low inventory.
-3. **Employee** can manage inventory items and generate a customer bill via the shopping cart.
-4. All transactions are saved to `invoices.csv`, and a daily sales report can be pulled from the Admin panel.
+# Run the application
+java -cp out/production/MVC Main
+```
 
-
-## 👥 Team — Mad Thinkers
-
-| Name       | ID       | Contribution |
-|---|---|---|
-| Md. Zubaer | 24101106 | Authentication & Core Base — abstract `User` classes, login logic, Login GUI |
-| Nasim Mahmud | 24201104 | Admin Panel — Employee management, Admin GUI dashboards, staff CRUD |
-| Dipraj Mitra Chandon | 24201091 | Inventory System — abstract `Item` logic, polymorphism, Item CRUD |
-| Yeasen Ahmed | 24201089 | Billing System — shopping cart logic, pricing, invoice generation |
+> **Note:** The `data/` folder and CSV files are created automatically on first run.
 
 ---
 
-## 📄 Project Report
+## 🔑 Default Login Credentials
 
-A detailed project report covering objectives, OOP theory, code architecture, and outputs is included in this repository.
+| Role     | ID         | Password   |
+|----------|------------|------------|
+| Admin    | `ADMIN001` | `admin123` |
+
+> A default admin account is auto-created if `data/employees.csv` is missing.  
+> Employees are added by the Admin from within the application.
 
 ---
 
-## 📝 License
+## 📖 How to Use
 
-This project was developed for academic purposes as part of the CSE 202 OOP I Lab coursework at the University of Asia Pacific.
+### As Admin
+1. Select **Admin** on the login screen, enter credentials, and click **Login**
+2. From the **Admin Dashboard**:
+   - Use **Add Employee** to create new employee accounts
+   - Use **Update / Delete Employee** to manage existing staff
+   - Switch to the **Inventory** tab to manage items
+   - Use **Add Item** to add Standard or Discount items
+   - Use **Search Item** to find items by ID or name
+   - Click **Sales Report** to view today's billing summary
+
+### As Employee
+1. Select **Employee** on the login screen, enter your credentials, and click **Login**
+2. From the **Employee Dashboard**:
+   - Browse all available inventory items
+   - Click **New Bill** to open the billing dialog
+   - Search and add items to the cart with quantities
+   - Update or remove cart items as needed
+   - Click **Checkout** to generate the invoice and update stock
+
+---
+
+## 💾 Data Storage
+
+All data is stored in plain **CSV files** inside the `data/` directory:
+
+| File              | Contents                                      |
+|-------------------|-----------------------------------------------|
+| `employees.csv`   | User accounts (id, name, password, role, shift, phone) |
+| `items.csv`       | Inventory (id, name, basePrice, discountPercent, stock, type) |
+| `invoices.csv`    | Billing records (billId, employeeId, dateTime, total, itemCount) |
+
+> CSV files are auto-created on first launch. Do **not** delete them during runtime.
+
+---
+
+## 🗂️ Class Diagram Summary
+
+```
+User (abstract)
+├── Admin
+└── Employee
+
+Item (abstract)
+├── StandardItem     → calculatePrice() returns basePrice
+└── DiscountItem     → calculatePrice() returns basePrice × (1 - discount/100)
+
+Bill
+└── contains List<Item> + List<Integer> (cart items & quantities)
+
+Controllers
+├── AuthController      → login, session management
+├── UserController      → employee CRUD
+├── InventoryController → item CRUD, search, stock
+└── BillingController   → cart, checkout, invoice, sales report
+
+CSVHandler (DAO)
+└── loadUsers / saveUsers / loadItems / saveItems / appendBill / loadTodaysBills
+```
+
+---
+
+## 👥 Contributors
+
+| Name                  | Student ID  | Section |
+|-----------------------|-------------|---------|
+| Sabekun Nahar Shefa   | 24101209    | D2      |
+| Md Ali Ajgar Sharif   | 24101219    | D2      |
+| Abdullah Al Sakib     | 24101225    | D2      |
+
+**Submitted to:** Baivab Das, Lecturer — Department of Computer Science and Engineering, University of Asia Pacific
+
+---
+
+## 📄 License
+
+This project was developed for academic purposes as part of **CSE 202: Object Oriented Programming I Lab**.
 
 ---
 
